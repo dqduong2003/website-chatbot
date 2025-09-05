@@ -4,24 +4,13 @@ class Chatbot {
         this.sendButton = document.getElementById('sendButton');
         this.chatMessages = document.getElementById('chatMessages');
         this.typingIndicator = document.getElementById('typingIndicator');
-        
-        this.botResponses = [
-            "That's an interesting question! Let me think about that for a moment.",
-            "I understand what you're asking. Here's what I can tell you about that.",
-            "Great question! Based on my knowledge, I can help you with that.",
-            "I'm here to help! Let me provide you with some information on that topic.",
-            "Thanks for asking! Here's what I know about that subject.",
-            "I appreciate your question. Let me share some insights with you.",
-            "That's a good point! Let me explain what I understand about this.",
-            "I'm glad you asked that! Here's what I can tell you.",
-            "Interesting perspective! Let me provide some information on that.",
-            "I'd be happy to help with that! Here's what I know."
-        ];
+        this.sessionId = null;
+        this.apiBaseUrl = 'http://localhost:3000/api';
         
         this.init();
     }
     
-    init() {
+    async init() {
         this.sendButton.addEventListener('click', () => this.sendMessage());
         this.messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -30,11 +19,14 @@ class Chatbot {
             }
         });
         
+        // Initialize session
+        await this.initializeSession();
+        
         // Auto-focus on input
         this.messageInput.focus();
     }
     
-    sendMessage() {
+    async sendMessage() {
         const message = this.messageInput.value.trim();
         if (!message) return;
         
@@ -47,11 +39,16 @@ class Chatbot {
         // Show typing indicator
         this.showTypingIndicator();
         
-        // Simulate bot thinking time
-        setTimeout(() => {
+        try {
+            // Send message to backend
+            const response = await this.sendToBackend(message);
             this.hideTypingIndicator();
-            this.generateBotResponse();
-        }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+            this.addMessage(response, 'bot');
+        } catch (error) {
+            this.hideTypingIndicator();
+            this.addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            console.error('Error sending message:', error);
+        }
     }
     
     addMessage(text, sender) {
@@ -84,10 +81,46 @@ class Chatbot {
         this.scrollToBottom();
     }
     
-    generateBotResponse() {
-        const randomIndex = Math.floor(Math.random() * this.botResponses.length);
-        const response = this.botResponses[randomIndex];
-        this.addMessage(response, 'bot');
+    async initializeSession() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.sessionId = data.sessionId;
+                console.log('Session initialized:', this.sessionId);
+            } else {
+                console.error('Failed to initialize session');
+            }
+        } catch (error) {
+            console.error('Error initializing session:', error);
+        }
+    }
+    
+    async sendToBackend(message) {
+        const response = await fetch(`${this.apiBaseUrl}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                sessionId: this.sessionId
+            }),
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to get response');
+        }
+        
+        const data = await response.json();
+        return data.response;
     }
     
     showTypingIndicator() {
