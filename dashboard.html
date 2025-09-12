@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation Dashboard - AI Chatbot</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1><i class="fas fa-robot"></i> Conversation Dashboard</h1>
+                    <p>Manage and view all chat conversations</p>
+                </div>
+                <div class="header-right">
+                    <button id="clearAllBtn" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                    <button id="refreshBtn" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <a href="index.html" class="btn btn-secondary">
+                        <i class="fas fa-comments"></i> New Chat
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalConversations">0</h3>
+                    <p>Total Conversations</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-message"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalMessages">0</h3>
+                    <p>Total Messages</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="recentConversations">0</h3>
+                    <p>Today's Chats</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Conversations List -->
+            <div class="conversations-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> All Conversations</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search conversations...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="conversations-list" id="conversationsList">
+                    <!-- Conversations will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Conversation Details -->
+            <div class="conversation-details" id="conversationDetails">
+                <div class="details-header">
+                    <h3 id="conversationTitle">Select a conversation</h3>
+                    <div class="details-actions">
+                        <button id="analyzeLeadBtn" class="btn btn-analyze" style="display: none;">
+                            <i class="fas fa-chart-line"></i> Analyze Lead
+                        </button>
+                        <button id="closeDetails" class="btn btn-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="conversation-messages" id="conversationMessages">
+                    <div class="empty-state">
+                        <i class="fas fa-comment-dots"></i>
+                        <p>Select a conversation to view its messages</p>
+                    </div>
+                </div>
+                <!-- Lead Analysis Display -->
+                <div class="lead-analysis" id="leadAnalysis" style="display: none;">
+                    <div class="analysis-header">
+                        <h4><i class="fas fa-user-tie"></i> Lead Analysis</h4>
+                        <div class="lead-quality-badge" id="leadQualityBadge"></div>
+                    </div>
+                    <div class="analysis-content" id="analysisContent">
+                        <!-- Analysis data will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading conversations...</p>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div class="error-modal" id="errorModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                    <button class="btn-close" id="closeErrorModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">An error occurred while loading conversations.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="retryBtn">Retry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
